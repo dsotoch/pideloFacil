@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "879112926394",
+    "project_id": "pidelofacil-85344",
+    "storage_bucket": "pidelofacil-85344.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:879112926394:android:377be8c6b1d661d725be83",
+        "android_client_info": {
+          "package_name": "com.techub.pidelofacil.pidelofacil_moto"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCo47YkmpDLclU6b4EF2YydubWCDFCJF_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
