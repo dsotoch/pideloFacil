@@ -90,7 +90,7 @@ class _PrincipalState extends State<Principal> with WidgetsBindingObserver {
       await iniciarServicioUI();
       _enviarData();
     });
-    verificarActualizacion();
+    //verificarActualizacion();
   }
 
   Future<void> verificarActualizacion() async {

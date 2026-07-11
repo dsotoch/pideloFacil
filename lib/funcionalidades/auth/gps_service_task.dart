@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:fl_location/fl_location.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:pidelofacil_moto/core/dio_client.dart';
 import 'package:pidelofacil_moto/funcionalidades/auth/gps_service.dart';
 
 class GpsService extends TaskHandler {
@@ -33,10 +34,13 @@ class GpsService extends TaskHandler {
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
+    DioClient.init();
+
     print("✅ SERVICIO INICIADO");
     _streamSubscription = FlLocation.getLocationStream().listen((
       location,
     ) async {
+
       if (_ultimaUbicacion == null ||
           calcularDistancia(_ultimaUbicacion!, location) > 10) {
         _ultimaUbicacion = location;

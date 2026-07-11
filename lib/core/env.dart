@@ -1,4 +1,4 @@
 class Env {
-  static String dominio="http://192.168.1.107:8000";
+  static String dominio="http://192.168.0.103:8080";
 
 }
