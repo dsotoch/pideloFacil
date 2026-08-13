@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pidelofacil_moto/core/env.dart';
 
 class Funciones {
+  final AudioPlayer _player = AudioPlayer();
   static void ocultarTeclado(BuildContext context) {
     FocusScope.of(context).unfocus();
   }
@@ -54,7 +55,8 @@ class Funciones {
   bool esNuevaVersion(String actual, String servidor) {
     return actual != servidor;
   }
-  Future<bool> verificarYActualizar(String version,String url) async {
+
+  Future<bool> verificarYActualizar(String version, String url) async {
     final versionActual = await getVersionActual();
 
     final versionServidor = version;
@@ -174,9 +176,15 @@ class Funciones {
   }
 
   Future<void> reproducirSonido() async {
-    final player = AudioPlayer();
-    player.setVolume(1.0);
-    await player.play(AssetSource('sonidos/click.mp3'));
+    try {
+      await _player.stop();
+
+      await _player.setVolume(1.0);
+
+      await _player.play(AssetSource('sonidos/click.mp3'));
+    } catch (e) {
+      print("Error audio: $e");
+    }
   }
 
   Future<void> mostrarNotificacion({

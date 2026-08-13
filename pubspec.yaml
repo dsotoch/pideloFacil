@@ -39,19 +39,19 @@ dependencies:
   dio: ^5.9.1
   device_info_plus: ^12.3.0
   crypto: ^3.0.7
-  shared_preferences: ^2.5.4
+  shared_preferences: ^2.5.5
   flutter_secure_storage: ^10.0.0
   firebase_core: ^4.4.0
   firebase_messaging: ^16.1.1
   another_flushbar: ^1.12.32
   flutter_local_notifications: ^20.0.0
-  flutter_foreground_task: ^9.2.1
   fl_location: ^5.0.0
   audioplayers: ^6.6.0
   url_launcher: ^6.3.2
   flutter_launcher_icons: ^0.14.4
   package_info_plus: ^9.0.1
   ota_update: ^7.1.0
+  flutter_screenutil: ^5.9.3
 
 dev_dependencies:
   flutter_test:

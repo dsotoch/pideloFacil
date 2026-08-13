@@ -1,8 +1,10 @@
 import 'package:fl_location/fl_location.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pidelofacil_moto/core/colores.dart';
 import 'package:pidelofacil_moto/core/funciones.dart';
-import 'package:pidelofacil_moto/funcionalidades/auth/gps_service.dart';
 import 'package:pidelofacil_moto/funcionalidades/principal/principal.dart';
 import '../../core/device.dart';
 import 'login_service.dart';
@@ -23,16 +25,73 @@ class _ViewLoginState extends State<ViewLogin> {
 
   bool cargando = false;
   bool ocultarPass = true;
+  bool recordar_datos=false;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ServiceGps().requestPermissions();
+      await leerDatos();
+
     });
-;
+  }
+  Future<void> leerDatos() async {
+    final storage = FlutterSecureStorage();
+
+    String? usuario = await storage.read(key: "usuario");
+    String? pass = await storage.read(key: "pass");
+    String? recordarValue = await storage.read(key: "recordar");
+
+    bool recordar_datoss = recordarValue == "true";
+    if(recordar_datoss){
+      setState(() {
+        emailCtrl.text=usuario!;
+        passCtrl.text=pass!;
+        recordar_datos=recordar_datoss;
+      });
+    }
+
+  }
+  Future<bool> pedirPermisosGPS() async {
+
+    var location = await Permission.location.request();
+
+    if (!location.isGranted) {
+     await Funciones().mostrarNotificacion(
+        context: context,
+        titulo: "Permiso de ubicación requerido",
+        mensaje: "Debes permitir el acceso a la ubicación para poder compartir tu ubicación.",
+      );
+      return false;
+    }
+
+
+    var always = await Permission.locationAlways.request();
+
+    if (!always.isGranted) {
+
+      await Funciones().mostrarNotificacion(
+        context: context,
+        titulo: "Activa ubicación en segundo plano",
+        mensaje: "Ve a Ajustes > Permisos > Ubicación y selecciona 'Permitir siempre' para que podamos rastrear tu ubicación cuando la aplicación esté cerrada.",
+      );
+
+      return false;
+    }
+
+
+   return true;
   }
 
   Future<void> login() async {
+    if(!await pedirPermisosGPS()){
+     await Funciones().mostrarNotificacion(
+        context: context,
+        titulo: "Activa los permisos",
+        mensaje: "Cierra la App y autoriza todos los permisos."
+      );
+     return;
+    }
+
     if (!_formKey.currentState!.validate()) return;
     setState(() => cargando = true);
 
@@ -57,6 +116,13 @@ class _ViewLoginState extends State<ViewLogin> {
         info["modelo"] ?? "-",
         info["plataforma"] ?? "-",
       );
+      if(recordar_datos){
+        final storage=FlutterSecureStorage();
+        await storage.write(key: "usuario", value: emailCtrl.text.trim());
+        await storage.write(key: "pass", value: passCtrl.text.trim());
+        await storage.write(key: "recordar", value: recordar_datos ? "true" : "false");
+
+      }
 
       if (res.statusCode == 200 && res.data['ok'] == true) {
         final data = res.data;
@@ -69,7 +135,6 @@ class _ViewLoginState extends State<ViewLogin> {
             data["usuario"]["nombre"].toString(),
           );
         }
-        await ServiceGps().requestPermissions();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -103,58 +168,62 @@ class _ViewLoginState extends State<ViewLogin> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colores.fondo, const Color(0xFF22C55E)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            colors: [const Color(0xFF22C55E),Colores.fondo],
+            begin: Alignment.topRight,
+            end: Alignment.bottomRight,
           ),
         ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding:  EdgeInsets.all(24.r),
               child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     /// LOGO
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding:  EdgeInsets.all(20.r),
+                      width: 0.5.sw,
+                      height: 0.2.sh,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(.2),
-                            blurRadius: 10,
+                            blurRadius: 10.r,
                           ),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.delivery_dining,
-                        size: 70,
-                        color: Colores.fondo,
+                      child:  Image.asset(
+                          "assets/entrega_nav.png",
+                          fit: BoxFit.contain,
+                          
+                        
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                     SizedBox(height: 10.h),
 
-                    const Text(
+                     Text(
                       'PideloFácil',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 28.sp,
                         fontWeight: FontWeight.bold,
+                        fontStyle:FontStyle.italic ,
                         color: Colors.white,
                       ),
                     ),
 
-                    const SizedBox(height: 30),
+                     SizedBox(height: 30.h),
 
                     /// CARD LOGIN
                     Container(
-                      padding: const EdgeInsets.all(24),
+                      padding:  EdgeInsets.all(24.r),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20.r),
                       ),
                       child: Column(
                         children: [
@@ -170,7 +239,7 @@ class _ViewLoginState extends State<ViewLogin> {
                                 : null,
                           ),
 
-                          const SizedBox(height: 20),
+                           SizedBox(height: 20.h),
 
                           TextFormField(
                             controller: passCtrl,
@@ -191,28 +260,40 @@ class _ViewLoginState extends State<ViewLogin> {
                             validator: (v) =>
                                 v!.isEmpty ? 'Ingrese contraseña' : null,
                           ),
+                          SizedBox(height: 10.h,),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                           children: [
+                             Checkbox(activeColor: Colors.green, value: recordar_datos, onChanged: (value) {
+                               setState(() {
+                                 recordar_datos=value!;
+                               });
+                             },),
+                             Text("Recordar Datos")
+                           ],
+                          ),
 
-                          const SizedBox(height: 30),
+                           SizedBox(height: 10.h),
 
                           SizedBox(
                             width: double.infinity,
-                            height: 48,
+                            height: 48.h,
                             child: ElevatedButton(
                               onPressed: cargando ? null : login,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colores.botones,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                 ),
                               ),
                               child: cargando
                                   ? const CircularProgressIndicator(
                                       color: Colors.white,
                                     )
-                                  : const Text(
+                                  :  Text(
                                       'INICIAR SESIÓN',
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 16.sp,
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                       ),

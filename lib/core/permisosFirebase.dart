@@ -41,15 +41,16 @@ class PermisosFirebase {
       final String cuerpo =
           mensaje.notification?.body ??
           Funciones().formatearMensajeDesdeData(data);
-      await Funciones().reproducirSonido();
+
       await Funciones().mostrarNotificacion(
         context: context,
         titulo: titulo,
         mensaje: cuerpo,
         icono: Icons.notifications_active,
         colorIcono: Colors.orange,
-        duracion: Duration(seconds: 10),
+        duracion: Duration(seconds: 5),
       );
+      await Funciones().reproducirSonido();
     });
   }
 
