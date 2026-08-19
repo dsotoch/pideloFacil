@@ -1,4 +1,4 @@
 class Env {
-  static String dominio="http://192.168.0.101:8000";
-
+  static String dominio="https://pidexa.online";
+static String dominio_portal="https://portal.pidexa.online";
 }

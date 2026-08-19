@@ -42,7 +42,7 @@ class _PrincipalState extends State<Principal> with WidgetsBindingObserver {
 
     iniciarServicio();
 
-    //verificarActualizacion();
+    verificarActualizacion();
   }
 
   Future<void> iniciarServicio() async {
@@ -55,7 +55,7 @@ class _PrincipalState extends State<Principal> with WidgetsBindingObserver {
   }
 
   Future<void> verificarActualizacion() async {
-    final s = await DioClient.dio.get("${Env.dominio}/getVersionApk");
+    final s = await DioClient.dio.get("${Env.dominio_portal}/getVersionApk.json");
     final version = s.data["version"] ?? "";
     final apkurl = s.data["apkurl"] ?? "";
 
@@ -70,7 +70,7 @@ class _PrincipalState extends State<Principal> with WidgetsBindingObserver {
 
   void actualizarApp(String url) {
     OtaUpdate()
-        .execute(url, destinationFilename: "pidelofacil.apk")
+        .execute(url, destinationFilename: "pidexa.apk")
         .listen((event) {});
   }
 

@@ -76,7 +76,7 @@ class LocationWorker(
 
 
             val url = URL(
-                "http://192.168.0.101:8000/api/save-position"
+                "https://pidexa.online/api/save-position"
             )
 
 

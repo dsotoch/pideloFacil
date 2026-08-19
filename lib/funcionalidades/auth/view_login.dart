@@ -7,7 +7,12 @@ import 'package:pidelofacil_moto/core/colores.dart';
 import 'package:pidelofacil_moto/core/funciones.dart';
 import 'package:pidelofacil_moto/funcionalidades/principal/principal.dart';
 import '../../core/device.dart';
+
+import 'package:ota_update/ota_update.dart';
+
+import 'package:pidelofacil_moto/core/dio_client.dart';
 import 'login_service.dart';
+import '../../core/env.dart';
 
 class ViewLogin extends StatefulWidget {
   const ViewLogin({super.key});
@@ -31,8 +36,27 @@ class _ViewLoginState extends State<ViewLogin> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await leerDatos();
-
+verificarActualizacion();
     });
+  }
+   Future<void> verificarActualizacion() async {
+    final s = await DioClient.dio.get("${Env.dominio_portal}/getVersionApk.json");
+    final version = s.data["version"] ?? "";
+    final apkurl = s.data["apkurl"] ?? "";
+
+    final nuevaActualizacion = await Funciones().verificarYActualizar(
+      version,
+      apkurl,
+    );
+    if (nuevaActualizacion) {
+      actualizarApp(apkurl);
+    }
+  }
+
+  void actualizarApp(String url) {
+    OtaUpdate()
+        .execute(url, destinationFilename: "pidexa.apk")
+        .listen((event) {});
   }
   Future<void> leerDatos() async {
     final storage = FlutterSecureStorage();
@@ -207,7 +231,7 @@ class _ViewLoginState extends State<ViewLogin> {
                      SizedBox(height: 10.h),
 
                      Text(
-                      'PideloFácil',
+                      'Pidexa',
                       style: TextStyle(
                         fontSize: 28.sp,
                         fontWeight: FontWeight.bold,
